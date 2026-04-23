@@ -5,25 +5,21 @@ import { useState, useRef, useEffect } from "react"
 
 const USERS = {
   rebecca: { id: 'rebecca', name: 'Rebecca', role: 'lead', group: null, password: 'demo123' },
+  mark:    { id: 'mark',    name: 'Mark',    role: 'lead', group: null, password: 'demo123' },
   steve:   { id: 'steve',   name: 'Steve',   role: 'lead', group: null, password: 'demo123' },
   casey:   { id: 'casey',   name: 'Casey',   role: 'agent', group: 2, password: 'demo123' },
-  aiden:   { id: 'aiden',   name: 'Aiden',   role: 'agent', group: 2, password: 'demo123' },
-  lena:    { id: 'lena',    name: 'Lena',    role: 'agent', group: 2, password: 'demo123' },
+  aidan:   { id: 'aidan',   name: 'Aidan',   role: 'agent', group: 2, password: 'demo123' },
+  amy:     { id: 'amy',     name: 'Amy',     role: 'agent', group: 2, password: 'demo123' },
   david:   { id: 'david',   name: 'David',   role: 'agent', group: 3, password: 'demo123' },
   henry:   { id: 'henry',   name: 'Henry',   role: 'agent', group: 3, password: 'demo123' },
-  priya:   { id: 'priya',   name: 'Priya',   role: 'agent', group: 3, password: 'demo123' },
-  sarah:   { id: 'sarah',   name: 'Sarah',   role: 'agent', group: 4, password: 'demo123' },
   andrew:  { id: 'andrew',  name: 'Andrew',  role: 'agent', group: 4, password: 'demo123' },
-  tom:     { id: 'tom',     name: 'Tom',     role: 'agent', group: 4, password: 'demo123' },
-  jorge:   { id: 'jorge',   name: 'Jorge',   role: 'agent', group: 1, password: 'demo123' },
-  nina:    { id: 'nina',    name: 'Nina',    role: 'agent', group: 1, password: 'demo123' },
 }
 
 const GROUPS = {
-  1: { id: 1, name: 'Onboarding', members: ['Jorge','Nina'], color: '#6366f1', email: 'onboarding@wellyx.com' },
-  2: { id: 2, name: 'Technical',  members: ['Casey','Aiden','Lena'], color: '#0ea5e9', email: 'technical@wellyx.com' },
-  3: { id: 3, name: 'Billing',    members: ['David','Henry','Priya'], color: '#10b981', email: 'billing@wellyx.com' },
-  4: { id: 4, name: 'Enterprise', members: ['Sarah','Andrew','Tom'], color: '#f59e0b', email: 'enterprise@wellyx.com' },
+  1: { id: 1, name: 'Onboarding', members: [],                    color: '#6366f1', email: 'onboarding@wellyx.com' },
+  2: { id: 2, name: 'Technical',  members: ['Casey','Aidan','Amy'], color: '#0ea5e9', email: 'technical@wellyx.com' },
+  3: { id: 3, name: 'Billing',    members: ['David','Henry'],       color: '#10b981', email: 'billing@wellyx.com' },
+  4: { id: 4, name: 'Enterprise', members: ['Andrew'],              color: '#f59e0b', email: 'enterprise@wellyx.com' },
 }
 
 const GROUP_COLORS = {
@@ -66,12 +62,12 @@ const INITIAL_TICKETS = [
   {
     id: 'T-002', subject: 'Billing discrepancy on March invoice',
     customer: 'Luna Ballroom', customerId: 'c2', from: 'finance@lunaballroom.com',
-    group: 4, status: 'pending', priority: 'medium', assignee: 'sarah', createdAt: ago(34),
+    group: 4, status: 'pending', priority: 'medium', assignee: 'andrew', createdAt: ago(34),
     messages: [
       { from: 'finance@lunaballroom.com', body: 'We noticed our March invoice shows an extra charge of $149. Can you clarify what this is for?', time: ago(34) },
-      { from: 'sarah@wellyx.com', body: 'Hi! I am reviewing your account now. I will have a full breakdown for you within 2 hours.', time: ago(33) },
+      { from: 'andrew@wellyx.com', body: 'Hi! I am reviewing your account now. I will have a full breakdown for you within 2 hours.', time: ago(33) },
     ],
-    notes: [{ author: 'Sarah', text: 'Extra charge was for additional location added mid-month. Need to confirm with them.', time: ago(33) }],
+    notes: [{ author: 'Andrew', text: 'Extra charge was for additional location added mid-month. Need to confirm with them.', time: ago(33) }],
   },
   {
     id: 'T-003', subject: 'Schedule module not syncing with Google Calendar',
@@ -95,7 +91,7 @@ const INITIAL_TICKETS = [
   {
     id: 'T-005', subject: 'Mobile app crashing on check-in',
     customer: 'Sunrise Yoga Studio', customerId: 'c5', from: 'hello@sunriseyoga.com',
-    group: 2, status: 'open', priority: 'high', assignee: 'aiden', createdAt: ago(12),
+    group: 2, status: 'open', priority: 'high', assignee: 'aidan', createdAt: ago(12),
     messages: [
       { from: 'hello@sunriseyoga.com', body: 'The mobile app crashes every time our staff tries to check in a member. Started this morning.', time: ago(12) },
     ],
@@ -115,38 +111,38 @@ const INITIAL_TICKETS = [
   {
     id: 'T-007', subject: 'Need data export for annual audit',
     customer: 'Elite Sports Academy', customerId: 'c11', from: 'contact@elitesports.com',
-    group: 4, status: 'pending', priority: 'medium', assignee: 'tom', createdAt: ago(48),
+    group: 4, status: 'pending', priority: 'medium', assignee: 'casey', createdAt: ago(48),
     messages: [
       { from: 'contact@elitesports.com', body: 'We need a full data export of all member transactions, attendance records, and staff activity logs for our annual audit covering Jan-Dec 2024.', time: ago(48) },
-      { from: 'tom@wellyx.com', body: 'Hi! I can help with this. The export will take about 30 minutes to generate given the date range. I will email it once ready.', time: ago(47) },
+      { from: 'casey@wellyx.com', body: 'Hi! I can help with this. The export will take about 30 minutes to generate given the date range. I will email it once ready.', time: ago(47) },
       { from: 'contact@elitesports.com', body: 'Perfect, thank you. The audit is next week so please do send asap.', time: ago(46) },
-      { from: 'tom@wellyx.com', body: 'Running the export now. You should receive an email with a secure download link within the hour.', time: ago(10) },
+      { from: 'casey@wellyx.com', body: 'Running the export now. You should receive an email with a secure download link within the hour.', time: ago(10) },
     ],
     notes: [
-      { author: 'Tom', text: 'Large export ~2.3GB. Using async export pipeline.', time: ago(47) },
-      { author: 'Tom', text: 'Export queued. ETA 45 min. Will notify client.', time: ago(10) },
+      { author: 'Casey', text: 'Large export ~2.3GB. Using async export pipeline.', time: ago(47) },
+      { author: 'Casey', text: 'Export queued. ETA 45 min. Will notify client.', time: ago(10) },
     ],
   },
   {
     id: 'T-008', subject: 'Payment gateway error - transactions declined',
     customer: 'Bianco Fitness', customerId: 'c1', from: 'admin@biancofitness.com',
-    group: 2, status: 'open', priority: 'high', assignee: 'lena', createdAt: ago(4),
+    group: 2, status: 'open', priority: 'high', assignee: 'amy', createdAt: ago(4),
     messages: [
       { from: 'admin@biancofitness.com', body: 'URGENT: All card payments are being declined since 2pm. Members cannot pay for memberships or classes. This is a serious issue!', time: ago(4) },
-      { from: 'lena@wellyx.com', body: 'I see this - our payment processor is showing elevated declines. I am escalating to our payments team immediately.', time: ago(3.5) },
+      { from: 'amy@wellyx.com', body: 'I see this - our payment processor is showing elevated declines. I am escalating to our payments team immediately.', time: ago(3.5) },
     ],
-    notes: [{ author: 'Lena', text: 'Stripe showing webhook failures. Payments team paged. Incident #2847 opened.', time: ago(3.5) }],
+    notes: [{ author: 'Amy', text: 'Stripe showing webhook failures. Payments team paged. Incident #2847 opened.', time: ago(3.5) }],
   },
   {
     id: 'T-009', subject: 'Setup help: importing existing member database',
     customer: 'Flex Athletics', customerId: 'c7', from: 'setup@flexathletics.com',
-    group: 1, status: 'open', priority: 'medium', assignee: 'jorge', createdAt: ago(18),
+    group: 1, status: 'open', priority: 'medium', assignee: 'casey', createdAt: ago(18),
     messages: [
       { from: 'setup@flexathletics.com', body: 'Hi we are new to Wellyx (just signed up last week). We have an existing member database in Excel with about 850 members. How do we import this?', time: ago(18) },
-      { from: 'jorge@wellyx.com', body: 'Welcome to Wellyx! Great news - we have a bulk import tool. I will send you our Excel template to format your data, then we can import directly. Takes about 10 minutes.', time: ago(17) },
+      { from: 'casey@wellyx.com', body: 'Welcome to Wellyx! Great news - we have a bulk import tool. I will send you our Excel template to format your data, then we can import directly. Takes about 10 minutes.', time: ago(17) },
       { from: 'setup@flexathletics.com', body: 'Brilliant! Yes please send the template. A few of our members also have credit card info we keep on file - can that be imported too?', time: ago(16) },
     ],
-    notes: [{ author: 'Jorge', text: 'New customer. Template sent. CC data requires Stripe migration tool — will walk them through it.', time: ago(17) }],
+    notes: [{ author: 'Casey', text: 'New customer. Template sent. CC data requires Stripe migration tool — will walk them through it.', time: ago(17) }],
   },
   {
     id: 'T-010', subject: 'Class booking widget not appearing on website',
@@ -162,36 +158,36 @@ const INITIAL_TICKETS = [
   {
     id: 'T-011', subject: 'Payroll integration setup - ADP',
     customer: 'Windsor Athletic Club', customerId: 'c3', from: 'manager@windsorathletic.com',
-    group: 4, status: 'pending', priority: 'low', assignee: 'sarah', createdAt: ago(55),
+    group: 4, status: 'pending', priority: 'low', assignee: 'andrew', createdAt: ago(55),
     messages: [
       { from: 'manager@windsorathletic.com', body: 'We use ADP for payroll and want to integrate it with Wellyx staff scheduling. Is this possible?', time: ago(55) },
-      { from: 'sarah@wellyx.com', body: 'Yes! We have native ADP integration. I will walk you through the setup. First, can you confirm you have admin access to your ADP account?', time: ago(54) },
+      { from: 'andrew@wellyx.com', body: 'Yes! We have native ADP integration. I will walk you through the setup. First, can you confirm you have admin access to your ADP account?', time: ago(54) },
       { from: 'manager@windsorathletic.com', body: 'Yes I have admin access to ADP. What do I need to do?', time: ago(50) },
-      { from: 'sarah@wellyx.com', body: "Great. I have sent you step-by-step setup instructions via email. The integration usually takes about 20 minutes. Let me know when you're in and I'll help you through it.", time: ago(49) },
+      { from: 'andrew@wellyx.com', body: "Great. I have sent you step-by-step setup instructions via email. The integration usually takes about 20 minutes. Let me know when you're in and I'll help you through it.", time: ago(49) },
     ],
-    notes: [{ author: 'Sarah', text: 'Setup guide emailed. Waiting for them to confirm setup started.', time: ago(49) }],
+    notes: [{ author: 'Andrew', text: 'Setup guide emailed. Waiting for them to confirm setup started.', time: ago(49) }],
   },
   {
     id: 'T-012', subject: 'Attendance reports showing wrong totals',
     customer: 'Champions Boxing Club', customerId: 'c10', from: 'owner@championsboxing.com',
-    group: 3, status: 'open', priority: 'medium', assignee: 'priya', createdAt: ago(9),
+    group: 3, status: 'open', priority: 'medium', assignee: 'henry', createdAt: ago(9),
     messages: [
       { from: 'owner@championsboxing.com', body: "The monthly attendance report for March shows 1,247 visits but our manual count is closer to 1,180. That's a 67 visit discrepancy. Is there a bug?", time: ago(9) },
-      { from: 'priya@wellyx.com', body: "Hi! I am looking into this now. The discrepancy could be due to how cancelled-and-rebooked sessions are counted. Can you tell me if you offer any drop-in or trial passes?", time: ago(8) },
+      { from: 'henry@wellyx.com', body: "Hi! I am looking into this now. The discrepancy could be due to how cancelled-and-rebooked sessions are counted. Can you tell me if you offer any drop-in or trial passes?", time: ago(8) },
       { from: 'owner@championsboxing.com', body: 'Yes we do drop-ins. We had about 60 drop-in visitors in March.', time: ago(7) },
     ],
-    notes: [{ author: 'Priya', text: 'Drop-ins are being double-counted when they scan in AND the session is marked complete. Known issue, patch in next release.', time: ago(8) }],
+    notes: [{ author: 'Henry', text: 'Drop-ins are being double-counted when they scan in AND the session is marked complete. Known issue, patch in next release.', time: ago(8) }],
   },
   {
     id: 'T-013', subject: 'Custom branding - logo not updating in app',
     customer: 'Aqua Sports Centre', customerId: 'c8', from: 'admin@aquasports.co.uk',
-    group: 1, status: 'resolved', priority: 'low', assignee: 'nina', createdAt: ago(96),
+    group: 1, status: 'resolved', priority: 'low', assignee: 'amy', createdAt: ago(96),
     messages: [
       { from: 'admin@aquasports.co.uk', body: 'We uploaded our new logo in Settings > Branding but the app still shows the old logo. How long does it take to update?', time: ago(96) },
-      { from: 'nina@wellyx.com', body: 'Hi! Logo changes can take up to 24h to propagate due to CDN caching. If it still shows after 24h, please let me know and I can force a cache clear.', time: ago(95) },
+      { from: 'amy@wellyx.com', body: 'Hi! Logo changes can take up to 24h to propagate due to CDN caching. If it still shows after 24h, please let me know and I can force a cache clear.', time: ago(95) },
       { from: 'admin@aquasports.co.uk', body: 'All sorted now, the new logo is showing. Thank you!', time: ago(72) },
     ],
-    notes: [{ author: 'Nina', text: 'Resolved - CDN cache cleared naturally within 24h.', time: ago(95) }],
+    notes: [{ author: 'Amy', text: 'Resolved - CDN cache cleared naturally within 24h.', time: ago(95) }],
   },
   {
     id: 'T-014', subject: 'GDPR data deletion request - 3 members',
@@ -205,13 +201,13 @@ const INITIAL_TICKETS = [
   {
     id: 'T-015', subject: 'Two-factor authentication not sending SMS',
     customer: 'PowerHouse Gym', customerId: 'c9', from: 'it@powerhousegym.com',
-    group: 2, status: 'open', priority: 'high', assignee: 'aiden', createdAt: ago(5),
+    group: 2, status: 'open', priority: 'high', assignee: 'aidan', createdAt: ago(5),
     messages: [
       { from: 'it@powerhousegym.com', body: 'We enabled 2FA for all staff last week. Several staff members are not receiving the SMS verification codes. This is blocking them from logging in. Affected users: Mark T, Lisa K, Sam R.', time: ago(5) },
-      { from: 'aiden@wellyx.com', body: 'I see this in the logs - looks like SMS delivery failures for +44 numbers. Are these UK numbers?', time: ago(4.5) },
+      { from: 'aidan@wellyx.com', body: 'I see this in the logs - looks like SMS delivery failures for +44 numbers. Are these UK numbers?', time: ago(4.5) },
       { from: 'it@powerhousegym.com', body: 'Yes, all three are UK numbers.', time: ago(4) },
     ],
-    notes: [{ author: 'Aiden', text: 'UK SMS routing issue via Twilio - known problem affecting +44 numbers since carrier changes. Fallback to email OTP offered as workaround.', time: ago(4.5) }],
+    notes: [{ author: 'Aidan', text: 'UK SMS routing issue via Twilio - known problem affecting +44 numbers since carrier changes. Fallback to email OTP offered as workaround.', time: ago(4.5) }],
   },
   {
     id: 'T-016', subject: 'Membership plan pricing not matching website',
@@ -477,10 +473,19 @@ const STATUS_COLORS = {
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 
+function useTick(ms = 60000) {
+  const [, setTick] = useState(0)
+  useEffect(() => {
+    const id = setInterval(() => setTick(t => t + 1), ms)
+    return () => clearInterval(id)
+  }, [ms])
+}
+
 function fmt(iso) {
   const d = new Date(iso)
   const now = new Date()
   const diff = now - d
+  if (diff < 60000) return 'just now'
   if (diff < 3600000) return `${Math.floor(diff/60000)}m ago`
   if (diff < 86400000) return `${Math.floor(diff/3600000)}h ago`
   return d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
@@ -514,10 +519,8 @@ function LoginScreen({ onLogin }) {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800 p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-600 mb-4">
-            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
+          <div className="inline-flex items-center justify-center mb-4">
+            <img src="/wellyx-logo.png" alt="Wellyx" className="w-16 h-16 rounded-full object-cover" />
           </div>
           <h1 className="text-2xl font-bold text-white">Wellyx Support</h1>
           <p className="text-slate-400 text-sm mt-1">Internal support portal</p>
@@ -549,7 +552,7 @@ function LoginScreen({ onLogin }) {
                 <button key={u.id} onClick={() => { setUsername(u.id); setPassword('demo123') }}
                   className="text-left px-2.5 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
                   <p className="text-xs font-semibold text-gray-800">{u.name}</p>
-                  <p className="text-xs text-gray-400">{u.role === 'lead' ? '👑 Lead' : `Grp ${u.group}`}</p>
+                  <p className="text-xs text-gray-400">{u.role === 'lead' ? '👑 Admin' : `Grp ${u.group}`}</p>
                 </button>
               ))}
             </div>
@@ -577,7 +580,7 @@ function Sidebar({ user, view, setView, onLogout, unreadCount }) {
     <div className="w-52 min-h-screen flex flex-col bg-slate-900 text-white flex-shrink-0">
       <div className="p-4 border-b border-white/10">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-sm font-bold">W</div>
+          <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0"><img src="/wellyx-logo.png" alt="Wellyx" className="w-full h-full object-cover" /></div>
           <div>
             <p className="text-sm font-semibold">Wellyx Support</p>
             <p className="text-xs text-slate-400">v2.0</p>
@@ -604,7 +607,7 @@ function Sidebar({ user, view, setView, onLogout, unreadCount }) {
           <div>
             <p className="text-sm font-medium">{user.name}</p>
             <p className="text-xs text-slate-400">
-              {user.role === 'lead' ? '👑 Lead' : `${GROUPS[user.group]?.name}`}
+              {user.role === 'lead' ? '👑 Admin' : `${GROUPS[user.group]?.name}`}
             </p>
           </div>
           <button onClick={onLogout} className="text-slate-400 hover:text-white transition-colors text-xs">
@@ -619,6 +622,7 @@ function Sidebar({ user, view, setView, onLogout, unreadCount }) {
 // ─── INBOX VIEW ───────────────────────────────────────────────────────────────
 
 function InboxView({ user, emails, setEmails, tickets, setTickets, onCreateTicket }) {
+  useTick()
   const [selected, setSelected] = useState(null)
   const [reply, setReply] = useState('')
   const [aiLoading, setAiLoading] = useState(false)
@@ -681,7 +685,7 @@ Write a professional, helpful, and concise email reply from ${agentName} at Well
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-6',
           max_tokens: 1000,
           messages: [{ role: 'user', content: prompt }]
         })
@@ -885,7 +889,7 @@ function ComposeView({ user, emails, setEmails, tickets, setTickets }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-6',
           max_tokens: 800,
           messages: [{
             role: 'user',
@@ -1007,6 +1011,7 @@ function ComposeView({ user, emails, setEmails, tickets, setTickets }) {
 // ─── TICKETS VIEW ─────────────────────────────────────────────────────────────
 
 function TicketsView({ user, tickets, setTickets }) {
+  useTick()
   const [selected, setSelected] = useState(null)
   const [reply, setReply] = useState('')
   const [note, setNote] = useState('')
@@ -1053,7 +1058,7 @@ function TicketsView({ user, tickets, setTickets }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-6',
           max_tokens: 800,
           messages: [{
             role: 'user',
