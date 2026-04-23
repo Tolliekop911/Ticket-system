@@ -683,15 +683,20 @@ Write a professional, helpful, and concise email reply from ${agentName} at Well
 
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true',
+        },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
+          model: 'claude-sonnet-4-20250514',
           max_tokens: 1000,
           messages: [{ role: 'user', content: prompt }]
         })
       })
       const data = await response.json()
       const text = data.content?.map(c => c.text || '').join('') || ''
+      if (!text) throw new Error(data.error?.message || 'No response')
       setReply(text.trim())
     } catch (e) {
       setReply('Error generating reply. Please try again.')
@@ -887,9 +892,13 @@ function ComposeView({ user, emails, setEmails, tickets, setTickets }) {
     try {
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true',
+        },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
+          model: 'claude-sonnet-4-20250514',
           max_tokens: 800,
           messages: [{
             role: 'user',
@@ -1056,9 +1065,13 @@ function TicketsView({ user, tickets, setTickets }) {
       const history = selectedTicket.messages.map(m => `${m.from}: ${m.body}`).join('\n\n')
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true',
+        },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
+          model: 'claude-sonnet-4-20250514',
           max_tokens: 800,
           messages: [{
             role: 'user',
@@ -1080,8 +1093,12 @@ Write a helpful, professional reply to the customer. Be warm but efficient. Addr
         })
       })
       const data = await response.json()
-      setReply(data.content?.map(c => c.text || '').join('').trim() || '')
-    } catch {}
+      const text = data.content?.map(c => c.text || '').join('').trim() || ''
+      if (!text) throw new Error(data.error?.message || 'Empty response')
+      setReply(text)
+    } catch (e) {
+      setReply('Error generating reply. Please try again.')
+    }
     setAiLoading(false)
   }
 
