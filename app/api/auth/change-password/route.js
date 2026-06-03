@@ -15,12 +15,12 @@ export async function POST(request) {
     return NextResponse.json({ error: 'New password must be at least 8 characters' }, { status: 400 })
   }
 
-  const db = getDb()
-  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(auth.user.id)
+  const db = await getDb()
+  const user = await db.queryOne('SELECT * FROM users WHERE id = ?', [auth.user.id])
   const valid = await bcrypt.compare(String(currentPassword), user.password_hash)
   if (!valid) return NextResponse.json({ error: 'Current password is incorrect' }, { status: 401 })
 
   const hash = await bcrypt.hash(String(newPassword).slice(0, 256), 10)
-  db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(hash, auth.user.id)
+  await db.execute('UPDATE users SET password_hash = ? WHERE id = ?', [hash, auth.user.id])
   return NextResponse.json({ ok: true })
 }

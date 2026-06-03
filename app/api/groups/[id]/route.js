@@ -6,13 +6,13 @@ export async function PUT(request, { params }) {
   const auth = await requireAuth(request, ['admin'])
   if (auth.error) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
-  const db = getDb()
-  const group = db.prepare('SELECT id FROM groups WHERE id = ?').get(params.id)
-  if (!group) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  const db = await getDb()
+  if (!await db.queryOne('SELECT id FROM groups WHERE id = ?', [params.id])) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
 
   const { name, color, email } = await request.json()
-  const updates = []
-  const values = []
+  const updates = [], values = []
 
   if (name  !== undefined) { updates.push('name = ?');  values.push(name.trim()) }
   if (color !== undefined) { updates.push('color = ?'); values.push(color) }
@@ -20,24 +20,24 @@ export async function PUT(request, { params }) {
 
   if (updates.length === 0) return NextResponse.json({ error: 'Nothing to update' }, { status: 400 })
   values.push(params.id)
-  db.prepare(`UPDATE groups SET ${updates.join(', ')} WHERE id = ?`).run(...values)
+  await db.execute(`UPDATE groups SET ${updates.join(', ')} WHERE id = ?`, values)
 
-  const updated = db.prepare('SELECT * FROM groups WHERE id = ?').get(params.id)
-  updated.members = db.prepare('SELECT id, name FROM users WHERE group_id = ? AND active = 1').all(params.id)
-  return NextResponse.json({ group: updated })
+  const group = await db.queryOne('SELECT * FROM groups WHERE id = ?', [params.id])
+  group.members = await db.query('SELECT id, name FROM users WHERE group_id = ? AND active = 1', [params.id])
+  return NextResponse.json({ group })
 }
 
 export async function DELETE(request, { params }) {
   const auth = await requireAuth(request, ['admin'])
   if (auth.error) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
-  const db = getDb()
-  const group = db.prepare('SELECT id FROM groups WHERE id = ?').get(params.id)
-  if (!group) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  const db = await getDb()
+  if (!await db.queryOne('SELECT id FROM groups WHERE id = ?', [params.id])) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
 
-  // Unassign users and customers before deleting
-  db.prepare('UPDATE users SET group_id = NULL WHERE group_id = ?').run(params.id)
-  db.prepare('UPDATE customers SET group_id = NULL WHERE group_id = ?').run(params.id)
-  db.prepare('DELETE FROM groups WHERE id = ?').run(params.id)
+  await db.execute('UPDATE users SET group_id = NULL WHERE group_id = ?', [params.id])
+  await db.execute('UPDATE customers SET group_id = NULL WHERE group_id = ?', [params.id])
+  await db.execute('DELETE FROM groups WHERE id = ?', [params.id])
   return NextResponse.json({ ok: true })
 }

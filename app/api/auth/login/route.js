@@ -1,32 +1,28 @@
 import { NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
-import { getDb, getUserById } from '@/lib/db.js'
+import { getDb } from '@/lib/db.js'
 import { signToken, setAuthCookie, checkLoginRateLimit, recordLoginAttempt } from '@/lib/auth.js'
 
 export async function POST(request) {
   try {
     const { username, password } = await request.json()
-
     if (!username || !password) {
       return NextResponse.json({ error: 'Username and password required' }, { status: 400 })
     }
 
     const cleanUsername = String(username).toLowerCase().trim().slice(0, 64)
-    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
+    const ip = request.headers.get('x-forwarded-for') || 'unknown'
 
-    const db = getDb()
+    const db = await getDb()
 
-    if (!checkLoginRateLimit(db, cleanUsername, ip)) {
-      return NextResponse.json(
-        { error: 'Too many failed attempts. Please wait 15 minutes.' },
-        { status: 429 }
-      )
+    if (!await checkLoginRateLimit(db, cleanUsername)) {
+      return NextResponse.json({ error: 'Too many failed attempts. Please wait 15 minutes.' }, { status: 429 })
     }
 
-    const user = db.prepare('SELECT * FROM users WHERE id = ? AND active = 1').get(cleanUsername)
+    const user = await db.queryOne('SELECT * FROM users WHERE id = ? AND active = 1', [cleanUsername])
     const valid = user && await bcrypt.compare(String(password).slice(0, 256), user.password_hash)
 
-    recordLoginAttempt(db, cleanUsername, ip, !!valid)
+    await recordLoginAttempt(db, cleanUsername, ip, !!valid)
 
     if (!valid) {
       return NextResponse.json({ error: 'Invalid username or password' }, { status: 401 })
