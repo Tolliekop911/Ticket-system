@@ -784,7 +784,7 @@ function CustomersView({ user, tickets, groups, customers, setCustomers }) {
 }
 
 function CustomerForm({ initial, groups, onSave, onCancel }) {
-  const [form, setForm] = useState({ name: initial?.name || '', email: initial?.email || '', plan: initial?.plan || 'Starter', status: initial?.status || 'active', groupId: initial?.group_id || '' })
+  const [form, setForm] = useState({ name: initial?.name || '', email: initial?.email || '', plan: initial?.plan || 'Excel', status: initial?.status || 'active', groupId: initial?.group_id || '' })
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
   return (
     <div className="flex-1 p-6 overflow-y-auto">
@@ -806,7 +806,7 @@ function CustomerForm({ initial, groups, onSave, onCancel }) {
               <label className="block text-xs font-semibold text-gray-600 mb-1.5">PLAN</label>
               <select className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={form.plan} onChange={e => set('plan', e.target.value)}>
-                {['Starter','Pro','Enterprise'].map(p => <option key={p}>{p}</option>)}
+                {['Excel','Exceed','Ultimate'].map(p => <option key={p}>{p}</option>)}
               </select>
             </div>
             <div>
